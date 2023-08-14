@@ -68,6 +68,26 @@ export class Observable<T> extends Component {
 	 */
 	provide(initialValueResolver: Promise<T>) {
 		initialValueResolver.then(value => this.emit(value));
+
+		return this;
+	}
+
+	/**
+	 * Update the current value.
+	 * 
+	 * Will only execute if either a `defaultValue` or a value has been emitted before.
+	 * 
+	 * @param updater Transformer
+	 * @param defaultValue A default value if no initial value is present
+	 */
+	transform(updater: (value: T) => T, defaultValue?: T) {
+		if (this.hasFired) {
+			this.emit(updater(this.value));
+		} else if (arguments.length == 2) {
+			this.emit(updater(defaultValue));
+		}
+
+		return this;
 	}
 
 	/**
