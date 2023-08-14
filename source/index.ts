@@ -3,9 +3,14 @@ import { Component } from "@acryps/page";
 type Handler<T> = (value: T) => any | void;
 
 export class Observable<T> extends Component {
-	private hasFired = false;
+	fired = false;
+	
 	private value?: T;
 	private subscribers: Handler<T>[] = [];
+
+	get currentValue() {
+		return this.value;
+	}
 
 	/**
 	 * @param initialValue An initial value for the observable, use `provide` to provide an async value
@@ -26,7 +31,7 @@ export class Observable<T> extends Component {
 	 * @param value Updated value
 	 */
 	emit(value: T) {
-		this.hasFired = true;
+		this.fired = true;
 		this.value = value;
 
 		for (let subscriber of this.subscribers) {
@@ -43,7 +48,7 @@ export class Observable<T> extends Component {
 	subscribe(handler: Handler<T>, fireInitialValue = true) {
 		const index = this.subscribers.push(handler) - 1;
 
-		if (fireInitialValue && this.hasFired) {
+		if (fireInitialValue && this.fired) {
 			handler(this.value!);
 		}
 
@@ -64,11 +69,24 @@ export class Observable<T> extends Component {
 
 	/**
 	 * Provide a promise that will emit an initial value when resolved
+	 * Passing a function will make it execute as soon as possible
 	 * 
 	 * @param initialValueResolver The promise that should be awaited
 	 */
-	provide(initialValueResolver: Promise<T>) {
-		initialValueResolver.then(value => this.emit(value));
+	provide(initialValueResolver: T | Promise<T> | (() => T) | (() => Promise<T>)) {
+		(async () => {
+			let resolver: T | Promise<T>;
+
+			if (typeof initialValueResolver == 'function') {
+				resolver = initialValueResolver();
+			} else {
+				resolver = initialValueResolver;
+			}
+
+			const value = await initialValueResolver;
+			
+			this.emit(value);
+		})();
 
 		return this;
 	}
@@ -82,7 +100,7 @@ export class Observable<T> extends Component {
 	 * @param defaultValue A default value if no initial value is present
 	 */
 	transform(updater: (value: T) => T, defaultValue?: T) {
-		if (this.hasFired) {
+		if (this.fired) {
 			this.emit(updater(this.value));
 		} else if (arguments.length == 2) {
 			this.emit(updater(defaultValue));
