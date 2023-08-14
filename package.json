@@ -9,7 +9,7 @@
 		"postversion": "git push",
 		"prepare": "tsc"
 	},
-	"dependencies": {
-		"@acryps/page": "^1.0.3"
+	"peerDependencies": {
+		"@acryps/page": "*"
 	}
 }
