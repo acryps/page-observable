@@ -26,6 +26,7 @@ export class Observable<T> extends Component {
 	 * @param value Updated value
 	 */
 	emit(value: T) {
+		this.hasFired = true;
 		this.value = value;
 
 		for (let subscriber of this.subscribers) {
