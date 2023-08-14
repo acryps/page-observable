@@ -3,8 +3,9 @@ import { Component } from "@acryps/page";
 type Handler<T> = (value: T) => any | void;
 
 export class Observable<T> extends Component {
-	private hasFired = false;
-	private value?: T;
+	currentValue?: T;
+	hasFired = false;
+
 	private subscribers: Handler<T>[] = [];
 
 	/**
@@ -27,7 +28,7 @@ export class Observable<T> extends Component {
 	 */
 	emit(value: T) {
 		this.hasFired = true;
-		this.value = value;
+		this.currentValue = value;
 
 		for (let subscriber of this.subscribers) {
 			subscriber(value);
@@ -44,7 +45,7 @@ export class Observable<T> extends Component {
 		const index = this.subscribers.push(handler) - 1;
 
 		if (fireInitialValue && this.hasFired) {
-			handler(this.value!);
+			handler(this.currentValue!);
 		}
 
 		const observed = this;
@@ -83,7 +84,7 @@ export class Observable<T> extends Component {
 	 */
 	transform(updater: (value: T) => T, defaultValue?: T) {
 		if (this.hasFired) {
-			this.emit(updater(this.value));
+			this.emit(updater(this.currentValue));
 		} else if (arguments.length == 2) {
 			this.emit(updater(defaultValue));
 		}
@@ -100,7 +101,7 @@ export class Observable<T> extends Component {
 		const node = document.createTextNode('');
 
 		this.subscribe(() => {
-			node.textContent = `${this.value}`;
+			node.textContent = `${this.currentValue}`;
 		});
 
 		return node;
@@ -117,7 +118,7 @@ export class Observable<T> extends Component {
 		const proxy = new Component();
 
 		proxy.render = () => {
-			const rendered = transformer(this.value!);
+			const rendered = transformer(this.currentValue!);
 
 			if (rendered instanceof Node) {
 				return rendered;
