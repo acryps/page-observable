@@ -1,1 +1,2 @@
-export * from "built";
+export * from "built/index";
+export * from "built/array";

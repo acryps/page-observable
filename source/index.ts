@@ -134,7 +134,7 @@ export class Observable<T> extends Component {
 					return rendered;
 				}
 
-				return document.createTextNode(`${this.render}`);
+				return document.createTextNode(`${rendered}`);
 			}
 
 			return document.createComment('');
