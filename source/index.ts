@@ -71,19 +71,11 @@ export class Observable<T> extends Component {
 	 * Provide a promise that will emit an initial value when resolved
 	 * Passing a function will make it execute as soon as possible
 	 * 
-	 * @param initialValueResolver The promise that should be awaited
+	 * @param resolver The promise that should be awaited
 	 */
-	provide(initialValueResolver: T | Promise<T> | (() => T) | (() => Promise<T>)) {
+	provide(resolver: Promise<T>) {
 		(async () => {
-			let resolver: T | Promise<T>;
-
-			if (typeof initialValueResolver == 'function') {
-				resolver = initialValueResolver();
-			} else {
-				resolver = initialValueResolver;
-			}
-
-			const value = await initialValueResolver;
+			const value = await resolver;
 			
 			this.emit(value);
 		})();
@@ -118,7 +110,7 @@ export class Observable<T> extends Component {
 		const node = document.createTextNode('');
 
 		this.subscribe(() => {
-			node.textContent = `${this.value}`;
+			node.textContent = `${this.currentValue}`;
 		});
 
 		return node;
@@ -135,7 +127,7 @@ export class Observable<T> extends Component {
 		const proxy = new Component();
 
 		proxy.render = () => {
-			const rendered = transformer(this.value!);
+			const rendered = transformer(this.currentValue!);
 
 			if (rendered instanceof Node) {
 				return rendered;
