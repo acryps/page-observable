@@ -1,8 +1,8 @@
 import { Observable } from ".";
 
 export class ObservableArray<T> extends Observable<T[]> {
-	push(item: T) {
-		this.emit([...this.currentValue, item]);
+	push(...items: T[]) {
+		this.emit([...this.currentValue, ...item]);
 	}
 
 	pop() {
