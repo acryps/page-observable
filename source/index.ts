@@ -7,6 +7,9 @@ export class Observable<T> extends Component {
 	private value?: T;
 	private subscribers: Handler<T>[] = [];
 
+	/**
+	 * @param initialValue An initial value for the observable, use `provide` to provide an async value
+	 */
 	constructor(
 		initialValue?: T
 	) {
@@ -17,6 +20,11 @@ export class Observable<T> extends Component {
 		}
 	}
 	
+	/**
+	 * Update all subscribers and rendered outputs with the new value
+	 * 
+	 * @param value Updated value
+	 */
 	emit(value: T) {
 		this.value = value;
 
@@ -25,6 +33,12 @@ export class Observable<T> extends Component {
 		}
 	}
 
+	/**
+	 * Listen for new values published with `emit`.
+	 * 
+	 * @param handler The function called when a new value is provided
+	 * @param fireInitialValue The handler will immediately be called if a value has been emitted before, set this to `false` to prevent the immediate call
+	 */
 	subscribe(handler: Handler<T>, fireInitialValue = true) {
 		const index = this.subscribers.push(handler) - 1;
 
@@ -47,10 +61,31 @@ export class Observable<T> extends Component {
 		}
 	}
 
+	/**
+	 * Provide a promise that will emit an initial value when resolved
+	 * 
+	 * @param initialValueResolver The promise that should be awaited
+	 */
+	provide(initialValueResolver: Promise<T>) {
+		initialValueResolver.then(value => this.emit(value));
+	}
+
+	/**
+	 * Render the value automatically in a component
+	 * 
+	 * Recommended only for primitives or objects with a `toString` function.
+	 */
 	render() {
 		return document.createTextNode(`${this.value}`);
 	}
 	
+	/**
+	 * Render value in component
+	 * 
+	 * Will wrap in `TextNode` if the transformed value is not a `Node`
+	 * 
+	 * @param transformer Converter from value to the element which should be rendered
+	 */
 	map(transformer: (value: T) => any) {
 		const proxy = new Component();
 
