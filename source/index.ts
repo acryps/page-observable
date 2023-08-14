@@ -127,13 +127,17 @@ export class Observable<T> extends Component {
 		const proxy = new Component();
 
 		proxy.render = () => {
-			const rendered = transformer(this.currentValue!);
+			if (this.fired) {
+				const rendered = transformer(this.currentValue);
 
-			if (rendered instanceof Node) {
-				return rendered;
+				if (rendered instanceof Node) {
+					return rendered;
+				}
+
+				return document.createTextNode(`${this.render}`);
 			}
 
-			return document.createTextNode(`${this.render}`);
+			return document.createComment('');
 		}
 		
 		this.subscribe(() => proxy.update());
