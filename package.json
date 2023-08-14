@@ -1,0 +1,15 @@
+{
+	"name": "@acryps/page-observable",
+	"version": "1.0.0",
+	"description": "renderable observables for @acryps/page",
+	"main": "built/index.js",
+	"typings": "built/index.d.ts",
+	"scripts": {
+		"preversion": "git pull",
+		"postversion": "git push",
+		"prepare": "tsc"
+	},
+	"dependencies": {
+		"@acryps/page": "^1.0.3"
+	}
+}
