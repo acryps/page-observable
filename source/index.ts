@@ -96,7 +96,13 @@ export class Observable<T> extends Component {
 	 * Recommended only for primitives or objects with a `toString` function.
 	 */
 	render() {
-		return document.createTextNode(`${this.value}`);
+		const node = document.createTextNode('');
+
+		this.subscribe(() => {
+			node.textContent = `${this.value}`;
+		});
+
+		return node;
 	}
 	
 	/**
