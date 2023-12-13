@@ -32,6 +32,21 @@ export class ObservableArray<T> extends Observable<T[]> {
 		return this.currentValue.find(predicate);
 	}
 
+	findIndex(predicate: (item: T, index: number, array: T[]) => boolean) {
+		return this.currentValue.findIndex(predicate);
+	}
+
+	replace(current: T, updated: T) {
+		const index = this.currentValue.indexOf(current);
+
+		if (index == -1) {
+			throw new Error('Source item not found');
+		}
+
+		this.currentValue.splice(index, 1, updated);
+		this.emit(this.currentValue);
+	}
+
 	filter(predicate: (item: T, index: number, array: T[]) => boolean) {
 		return this.currentValue.filter(predicate);
 	}
