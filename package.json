@@ -1,6 +1,6 @@
 {
 	"name": "@acryps/page-observable",
-	"version": "1.3.3",
+	"version": "1.4.0",
 	"description": "renderable observables for @acryps/page",
 	"main": "built/index.js",
 	"typings": "built/index.d.ts",
